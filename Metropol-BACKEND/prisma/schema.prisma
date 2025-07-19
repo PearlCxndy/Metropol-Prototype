@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,4 +6,62 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model event {
+  event_id          Int           @id @default(autoincrement())
+  user_uploaded_id  Int
+  event_title       String
+  event_description String?
+  event_time        DateTime      @db.Timestamptz(6)
+  event_location_id Int?
+  event_url         String?
+  location          location?     @relation(fields: [event_location_id], references: [location_id], onUpdate: NoAction, map: "fk_event_location")
+  user              user          @relation(fields: [user_uploaded_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_event_user")
+  event_media       event_media[]
+  saves             saves[]
+}
+
+model event_media {
+  media_id   Int    @id @default(autoincrement())
+  event_id   Int
+  media_file String
+  event      event  @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_media_event")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model followers {
+  user_following_id                      Int
+  user_follower_id                       Int
+  user_followers_user_follower_idTouser  user @relation("followers_user_follower_idTouser", fields: [user_follower_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_follower")
+  user_followers_user_following_idTouser user @relation("followers_user_following_idTouser", fields: [user_following_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_following")
+
+  @@id([user_following_id, user_follower_id])
+}
+
+model location {
+  location_id Int     @id @default(autoincrement())
+  address     String
+  event       event[]
+}
+
+model saves {
+  user_id  Int
+  event_id Int
+  event    event @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_saves_event")
+  user     user  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_saves_user")
+
+  @@id([user_id, event_id])
+}
+
+model user {
+  user_id                                     Int         @id @default(autoincrement())
+  first_name                                  String      @db.VarChar(100)
+  last_name                                   String      @db.VarChar(100)
+  date_created                                DateTime    @default(now()) @db.Timestamptz(6)
+  user_bio                                    String?
+  event                                       event[]
+  followers_followers_user_follower_idTouser  followers[] @relation("followers_user_follower_idTouser")
+  followers_followers_user_following_idTouser followers[] @relation("followers_user_following_idTouser")
+  saves                                       saves[]
 }
