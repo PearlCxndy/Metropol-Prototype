@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output   = "../generated/prisma/client"
 }
 
 datasource db {
@@ -57,7 +57,7 @@ model Saves {
 model User {
   user_id                                     Int         @id @default(autoincrement())
   first_name                                  String      @db.VarChar(100)
-  last_name                                   String      @db.VarChar(100)
+  last_name                                   String      @db.VarChar(100)   
   date_created                                DateTime    @default(now()) @db.Timestamptz(6)
   user_bio                                    String?
   events                                      Event[]
@@ -65,3 +65,4 @@ model User {
   followers_followers_user_following_idTouser Followers[] @relation("followers_user_following_idTouser")
   saves                                       Saves[]
 }
+ 
