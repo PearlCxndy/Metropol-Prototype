@@ -10,23 +10,24 @@ datasource db {
 
 model Event {
   event_id          Int           @id @default(autoincrement())
-  user_uploaded_id  Int
+  user_uploaded_id  Int?
   event_title       String
   event_description String?
   event_time        DateTime      @db.Timestamptz(6)
+  event_type        String?
   event_location_id Int?
   event_url         String?
   location          Location?     @relation(fields: [event_location_id], references: [location_id], onUpdate: NoAction, map: "fk_event_location")
-  user              User          @relation(fields: [user_uploaded_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_event_user")
+  user              User?         @relation(fields: [user_uploaded_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_event_user")
   event_media       Event_Media[]
   saves             Saves[]
 }
 
 model Event_Media {
-  media_id   Int    @id @default(autoincrement())
+  media_id   Int     @id @default(autoincrement())
   event_id   Int
-  media_file String
-  event      Event  @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_media_event")
+  media_file String?
+  event      Event   @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_media_event")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -40,9 +41,12 @@ model Followers {
 }
 
 model Location {
-  location_id Int     @id @default(autoincrement())
-  address     String
-  events      Event[]
+  location_id   Int     @id @default(autoincrement())
+  location_name String?
+  address       String
+  latitude      Float?
+  longitude     Float?
+  event         Event[]
 }
 
 model Saves {
@@ -57,12 +61,14 @@ model Saves {
 model User {
   user_id                                     Int         @id @default(autoincrement())
   first_name                                  String      @db.VarChar(100)
-  last_name                                   String      @db.VarChar(100)   
+  last_name                                   String      @db.VarChar(100)
   date_created                                DateTime    @default(now()) @db.Timestamptz(6)
   user_bio                                    String?
-  events                                      Event[]
+  password_hash                               String?     @db.VarChar
+  email                                       String?     @db.VarChar
+  salt                                        String?     @db.VarChar
+  events                                       Event[]
   followers_followers_user_follower_idTouser  Followers[] @relation("followers_user_follower_idTouser")
   followers_followers_user_following_idTouser Followers[] @relation("followers_user_following_idTouser")
   saves                                       Saves[]
 }
- 

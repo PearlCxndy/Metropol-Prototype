@@ -6,6 +6,6 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 
 app.listen(PORT, () => {
-  console.log(`App is running on http://localhost:${PORT}`);
-  routes(app);
+	console.log(`App is running on http://localhost:${PORT}`);
+	routes(app);
 });
