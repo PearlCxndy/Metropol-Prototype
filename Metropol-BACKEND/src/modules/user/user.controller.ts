@@ -1,14 +1,21 @@
 import { Request, Response } from "express";
 import prisma from "../../utils/connect";
-import { CreateUserInput } from "./user.schema";
 
 // Get All of the Users
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const allUsers = await prisma.user.findMany();
+    const allUsers = await prisma.user.findMany({
+      select: {
+        email: true,
+        first_name: true,
+        last_name: true,
+        user_id: true,
+      },
+    });
     res.status(200).json({ data: allUsers });
   } catch (e) {
     console.log(e);
+    res.status(500);
   }
 };
 
@@ -21,6 +28,12 @@ export const getUserById = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: {
         user_id: userId,
+      },
+      select: {
+        email: true,
+        first_name: true,
+        last_name: true,
+        user_id: true,
       },
     });
 

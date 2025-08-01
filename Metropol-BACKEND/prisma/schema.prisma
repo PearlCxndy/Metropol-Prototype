@@ -65,7 +65,7 @@ model User {
   date_created                                DateTime    @default(now()) @db.Timestamptz(6)
   user_bio                                    String?
   password_hash                               String?     @db.VarChar
-  email                                       String?     @db.VarChar
+  email                                       String?     @unique @db.VarChar
   salt                                        String?     @db.VarChar
   events                                       Event[]
   followers_followers_user_follower_idTouser  Followers[] @relation("followers_user_follower_idTouser")
