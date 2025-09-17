@@ -1,0 +1,30 @@
+services:
+  db:
+    container_name: db
+    image: postgres:13
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+
+  api:
+    env_file:
+      - .env.development
+    command: >
+      sh -c "
+        npm run db:migrate &&
+        npx nodemon -w /app/prima/migrations -e sql -x 'npm run db:migrate' & 
+        npm run dev
+      "
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
