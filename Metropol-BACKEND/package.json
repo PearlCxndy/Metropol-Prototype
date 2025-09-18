@@ -8,8 +8,12 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "npx prisma migrate dev",
+    "db:seed": "npx prisma db seed",
     "dev:docker": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d",
-    "dev:docker:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down"
+    "dev:docker:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down && npx prisma migrate reset --force"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "author": "",
   "license": "ISC",

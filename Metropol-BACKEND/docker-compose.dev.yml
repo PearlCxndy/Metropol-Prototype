@@ -16,7 +16,7 @@ services:
       - .env.development
     command: >
       sh -c "
-        npm run db:migrate &&
+        npm run db:migrate && npx prisma db seed &&
         npx nodemon -w /app/prima/migrations -e sql -x 'npm run db:migrate' & 
         npm run dev
       "
