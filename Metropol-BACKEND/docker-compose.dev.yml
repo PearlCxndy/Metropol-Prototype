@@ -1,30 +1,25 @@
 services:
-  db:
-    container_name: db
-    image: postgres:13
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgres
-
   api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthcheck"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     env_file:
       - .env.development
     command: >
       sh -c "
-        npm run db:migrate && npx prisma db seed &&
+        npm run db:migrate &&
         npx nodemon -w /app/prima/migrations -e sql -x 'npm run db:migrate' & 
         npm run dev
       "
     volumes:
       - .:/app
       - /app/node_modules
-    depends_on:
-      - db
-
-volumes:
-  pgdata:

@@ -9,11 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",
-    "dev:docker": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d",
-    "dev:docker:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down && npx prisma migrate reset --force"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "dev:docker": "docker compose -f docker-compose.dev.yml up --build -d",
+    "dev:docker:down": "docker compose -f docker-compose.dev.yml down"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "pino": "^9.10.0",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.24.6"
   },
