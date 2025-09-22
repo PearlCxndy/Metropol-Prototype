@@ -10,7 +10,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const userData: RegisterUserInput = req.body;
 
     const salt = await bcrypt.genSalt(
-      parseInt(process.env.SALTWORKFACTOR as string)
+      parseInt(process.env.SALTWORKFACTOR || ("10" as string))
     );
     const hash = await bcrypt.hash(userData.password_hash, salt);
 
@@ -46,7 +46,7 @@ export const loginUser = async (req: Request, res: Response) => {
       },
     });
     if (!user) {
-      res.status(401).json({ error: "Could not find the user" });
+      return res.status(401).json({ error: "Could not find the user" });
     }
 
     const isValid = await verifyPassword({
@@ -58,11 +58,11 @@ export const loginUser = async (req: Request, res: Response) => {
     if (isValid) {
       const jwt = issueJWT(user);
 
-      res.status(200).json({ token: jwt.token, expiresIn: jwt.expires });
+      return res.status(200).json({ token: jwt.token, expiresIn: jwt.expires });
     }
   } catch (err) {
-    res.send(500).json({ error: err });
     console.log(err);
+    return res.status(500).json({ error: err });
   }
 };
 
